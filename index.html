@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Key System</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --text-color: #1f2937;
+            --bg-color: #ffffff;
+            --sidebar-bg: #1f2937;
+            --card-bg: #ffffff;
+        }
+
+        .dark-mode {
+            --primary-color: #818cf8;
+            --text-color: #e5e7eb;
+            --bg-color: #111827;
+            --sidebar-bg: #1f2937;
+            --card-bg: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: var(--card-bg);
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+
+        .dashboard {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: var(--sidebar-bg);
+            padding: 30px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .main-content {
+            margin-left: 300px;
+            padding: 40px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: 0.3s;
+            font-size: 1.1em;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-color);
+        }
+
+        .nav-link i {
+            margin-right: 15px;
+            font-size: 24px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+        }
+
+        .key-generator {
+            display: none;
+        }
+
+        .welcome-screen {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            min-width: 600px;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+
+        .generated-key {
+            font-family: monospace;
+            font-size: 24px;
+            padding: 20px;
+            background: var(--sidebar-bg);
+            border-radius: 12px;
+            margin-top: 25px;
+            text-align: center;
+            display: none;
+            color: #fff;
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            right: 30px;
+            width: calc(100% - 60px);
+            background: #dc2626;
+        }
+
+        .logout-btn:hover {
+            background: #b91c1c;
+        }
+
+        h1 {
+            font-size: 2.5em;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        #timeMessage {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <i class='bx bx-moon' style="font-size: 24px;"></i>
+    </button>
+
+    <div class="container" id="loginPage">
+        <div class="login-container">
+            <h2 style="text-align: center; margin-bottom: 30px;">Login to Dashboard</h2>
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboardPage">
+        <div class="sidebar">
+            <h2 style="color: white; margin-bottom: 30px;">Dashboard</h2>
+            <a href="#" class="nav-link" onclick="showWelcome()">
+                <i class='bx bx-home'></i>
+                Home
+            </a>
+            <a href="#" class="nav-link" onclick="showKeyGenerator()">
+                <i class='bx bx-key'></i>
+                Key Generator
+            </a>
+            <button class="logout-btn" onclick="logout()">
+                <i class='bx bx-log-out' style="margin-right: 8px;"></i>
+                Logout
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="card">
+                    <h1 id="welcomeMessage"></h1>
+                    <p id="timeMessage" style="margin-top: 10px; color: var(--primary-color);"></p>
+                </div>
+            </div>
+
+            <div class="key-generator" id="keyGenerator">
+                <div class="card">
+                    <h2>Generate New Key</h2>
+                    <select id="keyDuration">
+                        <option value="1">1 Day</option>
+                        <option value="7">7 Days</option>
+                        <option value="30">30 Days</option>
+                        <option value="365">1 Year</option>
+                    </select>
+                    <button onclick="generateKey()">Generate Key</button>
+                    <div class="generated-key" id="generatedKey"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const users = {
+            'Dear': 'Admin1',
+            'Matt': 'Admin2'
+        };
+
+        let currentUser = '';
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (users[username] && users[username] === password) {
+                currentUser = username;
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
+                updateWelcomeMessage();
+            } else {
+                alert('Invalid credentials!');
+            }
+        }
+
+        function logout() {
+            currentUser = '';
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboardPage').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function updateWelcomeMessage() {
+            const hour = new Date().getHours();
+            let greeting = '';
+            
+            if (hour >= 5 && hour < 12) {
+                greeting = 'Good Morning';
+            } else if (hour >= 12 && hour < 18) {
+                greeting = 'Good Afternoon';
+            } else {
+                greeting = 'Good Evening';
+            }
+
+            document.getElementById('welcomeMessage').textContent = `${greeting}, ${currentUser}!`;
+            document.getElementById('timeMessage').textContent = new Date().toLocaleString();
+        }
+
+        function showWelcome() {
+            document.getElementById('welcomeScreen').style.display = 'block';
+            document.getElementById('keyGenerator').style.display = 'none';
+            updateWelcomeMessage();
+        }
+
+        function showKeyGenerator() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('keyGenerator').style.display = 'block';
+        }
+
+        function generateKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let key = '';
+            for (let i = 0; i < 12; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            const keyElement = document.getElementById('generatedKey');
+            keyElement.style.display = 'block';
+            keyElement.textContent = key;
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.theme-toggle i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('bx-moon');
+                icon.classList.add('bx-sun');
+            } else {
+                icon.classList.remove('bx-sun');
+                icon.classList.add('bx-moon');
+            }
+        }
+
+        // Update time every second
+        setInterval(updateWelcomeMessage, 1000);
+    </script>
+</body>
+</html>
