@@ -12,6 +12,8 @@
             --bg-color: #ffffff;
             --sidebar-bg: #1f2937;
             --card-bg: #ffffff;
+            --success-color: #10b981;
+            --error-color: #ef4444;
         }
 
         .dark-mode {
@@ -28,6 +30,22 @@
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
             transition: all 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         body {
@@ -55,6 +73,7 @@
             width: 100%;
             max-width: 500px;
             backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease-out;
         }
 
         .dashboard {
@@ -71,11 +90,13 @@
             position: fixed;
             left: 0;
             top: 0;
+            animation: slideIn 0.5s ease-out;
         }
 
         .main-content {
             margin-left: 300px;
             padding: 40px;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .nav-link {
@@ -91,6 +112,11 @@
         }
 
         .nav-link:hover {
+            background: var(--primary-color);
+            transform: translateX(10px);
+        }
+
+        .nav-link.active {
             background: var(--primary-color);
         }
 
@@ -108,6 +134,13 @@
             background: transparent;
             color: var(--text-color);
             font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+            outline: none;
         }
 
         button {
@@ -121,10 +154,16 @@
             font-weight: 600;
             margin-top: 20px;
             font-size: 1.1em;
+            transition: all 0.3s ease;
         }
 
         button:hover {
             opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         .theme-toggle {
@@ -139,7 +178,7 @@
             margin: 0;
         }
 
-        .key-generator {
+        .key-generator, .settings-screen {
             display: none;
         }
 
@@ -154,6 +193,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
             min-width: 600px;
+            animation: fadeIn 0.5s ease-out;
         }
 
         select {
@@ -165,6 +205,12 @@
             background: transparent;
             color: var(--text-color);
             font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            border-color: var(--primary-color);
+            outline: none;
         }
 
         .generated-key {
@@ -177,6 +223,7 @@
             text-align: center;
             display: none;
             color: #fff;
+            animation: pulse 2s infinite;
         }
 
         .logout-btn {
@@ -192,6 +239,62 @@
             background: #b91c1c;
         }
 
+        .key-history {
+            margin-top: 30px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .key-history h3 {
+            margin-bottom: 15px;
+        }
+
+        .key-list {
+            list-style: none;
+        }
+
+        .key-list li {
+            padding: 10px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .key-list li:last-child {
+            border-bottom: none;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .status.active {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .status.expired {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            background: var(--success-color);
+            color: white;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
         h1 {
             font-size: 2.5em;
         }
@@ -204,12 +307,55 @@
         #timeMessage {
             font-size: 1.2em;
         }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()">
-        <i class='bx bx-moon' style="font-size: 24px;"></i>
-    </button>
+    <div class="notification" id="notification"></div>
 
     <div class="container" id="loginPage">
         <div class="login-container">
@@ -223,13 +369,17 @@
     <div class="dashboard" id="dashboardPage">
         <div class="sidebar">
             <h2 style="color: white; margin-bottom: 30px;">Dashboard</h2>
-            <a href="#" class="nav-link" onclick="showWelcome()">
+            <a href="#" class="nav-link active" onclick="showWelcome()">
                 <i class='bx bx-home'></i>
                 Home
             </a>
             <a href="#" class="nav-link" onclick="showKeyGenerator()">
                 <i class='bx bx-key'></i>
                 Key Generator
+            </a>
+            <a href="#" class="nav-link" onclick="showSettings()">
+                <i class='bx bx-cog'></i>
+                Settings
             </a>
             <button class="logout-btn" onclick="logout()">
                 <i class='bx bx-log-out' style="margin-right: 8px;"></i>
@@ -256,6 +406,40 @@
                     </select>
                     <button onclick="generateKey()">Generate Key</button>
                     <div class="generated-key" id="generatedKey"></div>
+
+                    <div class="key-history">
+                        <h3>Recent Keys</h3>
+                        <ul class="key-list" id="keyList"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-screen" id="settingsScreen">
+                <div class="card">
+                    <h2>Settings</h2>
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 15px;">Theme</h3>
+                        <label class="switch">
+                            <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                            <span class="slider"></span>
+                        </label>
+                        <span style="margin-left: 15px;">Dark Mode</span>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 15px;">Notifications</h3>
+                        <label class="switch">
+                            <input type="checkbox" id="notificationToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span style="margin-left: 15px;">Enable Notifications</span>
+                    </div>
+
+                    <div>
+                        <h3 style="margin-bottom: 15px;">Account Information</h3>
+                        <p>Username: <span id="currentUsername"></span></p>
+                        <p>Last Login: <span id="lastLogin"></span></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -263,12 +447,27 @@
 
     <script>
         const users = {
-            'Dear': 'Admin1',
+            'thebilldevadmin': '@Admin2025',
             'Matt': 'Admin2',
-            'Jah' : 'Jaspaneverstops.'
+            'Jah' : 'Jaspaneverstops.',
+            'Galaxy' : 'TempPassword'
         };
 
         let currentUser = '';
+        let keyHistory = [];
+        let lastLoginTime = '';
+
+        function showNotification(message) {
+            if (!document.getElementById('notificationToggle').checked) return;
+            
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
 
         function login() {
             const username = document.getElementById('username').value;
@@ -276,9 +475,11 @@
 
             if (users[username] && users[username] === password) {
                 currentUser = username;
+                lastLoginTime = new Date().toLocaleString();
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('dashboardPage').style.display = 'block';
                 updateWelcomeMessage();
+                showNotification('Welcome back, ' + currentUser + '!');
             } else {
                 alert('Invalid credentials!');
             }
@@ -290,6 +491,7 @@
             document.getElementById('dashboardPage').style.display = 'none';
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
+            showNotification('Logged out successfully');
         }
 
         function updateWelcomeMessage() {
@@ -308,15 +510,37 @@
             document.getElementById('timeMessage').textContent = new Date().toLocaleString();
         }
 
+        function setActiveNav(element) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+
         function showWelcome() {
             document.getElementById('welcomeScreen').style.display = 'block';
             document.getElementById('keyGenerator').style.display = 'none';
+            document.getElementById('settingsScreen').style.display = 'none';
+            setActiveNav(document.querySelector('.nav-link:nth-child(1)'));
             updateWelcomeMessage();
         }
 
         function showKeyGenerator() {
             document.getElementById('welcomeScreen').style.display = 'none';
             document.getElementById('keyGenerator').style.display = 'block';
+            document.getElementById('settingsScreen').style.display = 'none';
+            setActiveNav(document.querySelector('.nav-link:nth-child(2)'));
+        }
+
+        function showSettings() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('keyGenerator').style.display = 'none';
+            document.getElementById('settingsScreen').style.display = 'block';
+            setActiveNav(document.querySelector('.nav-link:nth-child(3)'));
+            
+            document.getElementById('currentUsername').textContent = currentUser;
+            document.getElementById('lastLogin').textContent = lastLoginTime;
+            document.getElementById('themeToggle').checked = document.body.classList.contains('dark-mode');
         }
 
         function generateKey() {
@@ -329,22 +553,59 @@
             const keyElement = document.getElementById('generatedKey');
             keyElement.style.display = 'block';
             keyElement.textContent = key;
+
+            const duration = document.getElementById('keyDuration').value;
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + parseInt(duration));
+
+            keyHistory.unshift({
+                key: key,
+                duration: duration,
+                generated: new Date().toLocaleString(),
+                expiry: expiryDate
+            });
+
+            updateKeyHistory();
+            showNotification('New key generated successfully!');
+        }
+
+        function updateKeyHistory() {
+            const keyList = document.getElementById('keyList');
+            keyList.innerHTML = '';
+
+            keyHistory.slice(0, 5).forEach(keyData => {
+                const li = document.createElement('li');
+                const isExpired = new Date(keyData.expiry) < new Date();
+
+                li.innerHTML = `
+                    <div>
+                        <strong>${keyData.key}</strong>
+                        <div style="font-size: 0.9em; color: var(--text-color);">
+                            Generated: ${keyData.generated}
+                        </div>
+                    </div>
+                    <span class="status ${isExpired ? 'expired' : 'active'}">
+                        ${isExpired ? 'Expired' : 'Active'}
+                    </span>
+                `;
+                keyList.appendChild(li);
+            });
         }
 
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
-            const icon = document.querySelector('.theme-toggle i');
-            if (document.body.classList.contains('dark-mode')) {
-                icon.classList.remove('bx-moon');
-                icon.classList.add('bx-sun');
-            } else {
-                icon.classList.remove('bx-sun');
-                icon.classList.add('bx-moon');
-            }
+            showNotification('Theme updated successfully!');
         }
 
         // Update time every second
         setInterval(updateWelcomeMessage, 1000);
+
+        // Handle Enter key on login
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
     </script>
 </body>
 </html>
